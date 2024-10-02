@@ -1,29 +1,75 @@
 <html>
 <head>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Include html5-qrcode library -->
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
 </head>
 <body class="bg-blue-600 h-screen flex flex-col justify-between items-center p-4">
     <!-- Top Circle -->
     <div class="w-full flex justify-end">
-        <a href="#" class="bg-gray-300 rounded-full w-12 h-12 block"></a> <!-- Increased size from w-6 h-6 to w-12 h-12 -->
+        <a href="#" class="bg-gray-300 rounded-full w-12 h-12 block"></a>
     </div>
 
     <!-- Main Content -->
     <div class="flex flex-col space-y-4 w-full items-center">
-        <a href="#" class="bg-white rounded-lg w-3/4 h-40 block"></a> <!-- Increased height from h-20 to h-40 -->
+        <a href="#" class="bg-white rounded-lg w-3/4 h-40 block"></a>
         <div class="flex space-x-4 w-3/4">
-            <a href="#" class="bg-pink-100 rounded-lg w-1/2 h-48 block"></a> <!-- Increased height from h-20 to h-48 -->
-            <a href="#" class="bg-pink-100 rounded-lg w-1/2 h-48 block"></a> <!-- Increased height from h-20 to h-48 -->
+            <a href="#" class="bg-pink-100 rounded-lg w-1/2 h-48 block"></a>
+            <a href="#" class="bg-pink-100 rounded-lg w-1/2 h-48 block"></a>
         </div>
-        <a href="#" class="bg-white rounded-lg w-3/4 h-40 block"></a> <!-- Increased height from h-20 to h-40 -->
+        <a href="#" class="bg-white rounded-lg w-3/4 h-40 block"></a>
     </div>
 
     <!-- Bottom Navigation -->
     <div class="w-full flex justify-around items-center">
-        <a href="#"><i class="fas fa-home text-white text-6xl"></i></a> <!-- Increased size from text-3xl to text-6xl -->
-        <a href="#" class="rounded-full border-4 border-white w-24 h-24 flex items-center justify-center pt-2"><i class="fas fa-expand text-white text-6xl"></i></a> <!-- Added top padding -->
-        <a href="#"><i class="fas fa-sign-out-alt text-white text-6xl"></i></a> <!-- Increased size from text-3xl to text-6xl -->
+        <a href="#"><i class="fas fa-home text-white text-6xl"></i></a>
+        <a href="#" id="scan-qr-btn" class="rounded-full border-4 border-white w-24 h-24 flex items-center justify-center pt-2">
+            <i class="fas fa-expand text-white text-6xl"></i>
+        </a>
+        <a href="#"><i class="fas fa-sign-out-alt text-white text-6xl"></i></a>
     </div>
+
+    <!-- QR Code Scanner Modal (hidden by default) -->
+    <div id="qr-scanner" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden">
+        <div class="bg-white p-4 rounded-lg">
+            <div id="qr-reader" style="width: 300px;"></div>
+            <button id="close-scanner" class="mt-4 bg-red-500 text-white p-2 rounded">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Event listener for QR scan button
+        document.getElementById('scan-qr-btn').addEventListener('click', function () {
+            // Show the QR scanner modal
+            document.getElementById('qr-scanner').classList.remove('hidden');
+
+            // Start QR scanner
+            const qrReader = new Html5Qrcode("qr-reader");
+            qrReader.start(
+                { facingMode: "environment" }, // Use rear camera
+                {
+                    fps: 10, // Frame rate
+                    qrbox: 250 // QR scanning box
+                },
+                qrCodeMessage => {
+                    // Handle the QR code value
+                    alert(`QR Code scanned: ${qrCodeMessage}`);
+                    qrReader.stop(); // Stop scanning after successful scan
+                    document.getElementById('qr-scanner').classList.add('hidden'); // Hide modal
+                },
+                errorMessage => {
+                    console.log(`QR scan error: ${errorMessage}`);
+                }
+            ).catch(err => {
+                console.error(`Error starting QR scanner: ${err}`);
+            });
+        });
+
+        // Event listener for closing the scanner
+        document.getElementById('close-scanner').addEventListener('click', function () {
+            document.getElementById('qr-scanner').classList.add('hidden');
+        });
+    </script>
 </body>
 </html>
